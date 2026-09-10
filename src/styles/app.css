@@ -95,7 +95,8 @@ a {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  padding: 10px 26px calc(16px + env(safe-area-inset-bottom, 0px));
+  /* 아래 여백은 홈 인디케이터가 있는 기기에서만 준다 */
+  padding: 10px 26px calc(8px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid var(--line-2);
   background: var(--surface);
   flex: none;
