@@ -37,14 +37,23 @@ export async function analyzeText(input: AnalyzeRequest): Promise<AnalysisResult
     throw new AnalyzeFailure(`분석 서버에 연결하지 못했어요. (${(error as Error).message})`, 'network')
   }
 
-  const payload = (await res.json().catch(() => null)) as
-    | (AnalysisResult & { error?: string; code?: string })
-    | null
+  const raw = await res.text().catch(() => '')
+  let payload: (AnalysisResult & { error?: string; code?: string }) | null = null
+  try {
+    payload = JSON.parse(raw)
+  } catch {
+    payload = null
+  }
 
+  if (payload?.error) throw new AnalyzeFailure(payload.error, payload.code ?? 'unknown')
+
+  // JSON 이 아니면 서버가 아니라 플랫폼이 돌려준 응답이다(404·500 페이지 등).
+  // 원인을 찾을 수 있게 상태 코드와 앞부분을 그대로 보여준다.
   if (!res.ok || !payload) {
+    const hint = raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140)
     throw new AnalyzeFailure(
-      payload?.error ?? '분석에 실패했어요. 잠시 후 다시 시도해 주세요.',
-      payload?.code ?? 'unknown',
+      `분석 요청이 실패했어요. (HTTP ${res.status})${hint ? ` ${hint}` : ''}`,
+      `http_${res.status}`,
     )
   }
 

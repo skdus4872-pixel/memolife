@@ -1,16 +1,14 @@
 {
-  "//": "Vercel 서버리스 함수 빌드용. 루트 tsconfig 는 noEmit(브라우저 번들 검사)이라 여기서 따로 둔다.",
+  "//": "Vercel 서버리스 함수 빌드용. 루트 tsconfig 는 noEmit(브라우저 번들 검사)이라 여기서 따로 둔다. 빌더의 TypeScript 버전이 무엇이든 통하도록 보수적인 옵션만 쓴다.",
   "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022"],
+    "target": "ES2020",
+    "lib": ["ES2020"],
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "types": ["node"],
-    "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true,
-    "allowImportingTsExtensions": false,
+    "strict": true,
     "noEmit": false
   },
   "include": ["./**/*.ts", "../server/**/*.ts", "../src/lib/analysis.ts", "../src/lib/types.ts"]
