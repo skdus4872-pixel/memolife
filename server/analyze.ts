@@ -244,7 +244,7 @@ export async function runAnalysis(
   const apiKey = env.OPENAI_API_KEY
   if (!apiKey) {
     throw new AnalyzeError(
-      'OPENAI_API_KEY 가 설정되지 않았습니다. .env 파일에 키를 넣어주세요.',
+      'OPENAI_API_KEY 가 설정되지 않았습니다. 로컬은 .env, 배포는 Vercel 환경 변수에 넣어주세요.',
       503,
       'not_configured',
     )

@@ -55,7 +55,7 @@ export function My() {
             toast(
               ai?.configured
                 ? `${ai.model} 로 분석하고 있어요`
-                : '.env 에 OPENAI_API_KEY 를 넣고 서버를 다시 켜주세요',
+                : 'OPENAI_API_KEY 를 서버에 설정해주세요 (로컬 .env / Vercel 환경 변수)',
             )
           }
         />

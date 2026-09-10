@@ -137,7 +137,8 @@ export function QuickRecord() {
 
         {status && !configured && !error && (
           <div className="src" style={{ marginTop: 12 }}>
-            AI 분석이 꺼져 있어요. <b>.env</b> 에 <b>OPENAI_API_KEY</b> 를 넣고 개발 서버를 다시 켜면 열립니다.
+            AI 분석이 꺼져 있어요. 서버에 <b>OPENAI_API_KEY</b> 가 있으면 열립니다. 로컬은 <b>.env</b>, 배포는 Vercel 환경
+            변수에 넣어주세요.
           </div>
         )}
 

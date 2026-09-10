@@ -51,14 +51,15 @@ LifeRecord
 
 ## AI 분석 (OpenAI)
 
-`.env.example` 를 `.env` 로 복사하고 키를 넣으면 켜진다.
+로컬은 `.env.example` 를 `.env` 로 복사하고 키를 넣으면 켜진다.
 
 ```
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=...
 # OPENAI_MODEL=gpt-4o-mini   (기본값)
 ```
 
 키는 **서버 쪽에서만** 읽힌다. 클라이언트는 `/api/analyze` 만 호출한다.
+키를 코드나 저장소에 넣지 않는다 — `.env` 는 `.gitignore` 에 있고, `.env.example` 에는 자리표시자만 있다.
 
 ```
 + 버튼 → 원문 입력 → /api/analyze → AI 제안 → 사용자가 고르고 고침 → 저장
@@ -98,6 +99,37 @@ OPENAI_API_KEY=sk-...
 - **먹었다고 해도 확정하지 않는다** — 음식은 `pending`(확인 대기)으로 저장되고,
   음식 확인 화면을 거쳐야 섭취 통계에 들어간다.
 - 분석에 실패해도 원문은 남는다 — "AI 없이 저장"으로 텍스트만 기록할 수 있다.
+
+## Vercel 배포
+
+저장소를 Vercel에 연결하면 자동 감지된다. `vercel.json` 에 명시해 둔 값:
+
+| 항목 | 값 |
+| --- | --- |
+| Framework | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Serverless Function | `api/analyze.ts` (maxDuration 30초) |
+
+**환경 변수** — Project → Settings → Environment Variables 에 등록한다.
+값은 저장소에 들어가지 않고 Vercel이 함수 런타임에 주입한다.
+
+| 이름 | 필수 | 적용 환경 |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | 필수 | Production / Preview (Development 는 로컬 `.env` 사용) |
+| `OPENAI_MODEL` | 선택 | 기본 `gpt-4o-mini` |
+| `OPENAI_BASE_URL` | 선택 | 프록시·Azure를 쓸 때만 |
+
+환경 변수를 추가하거나 바꾼 뒤에는 **재배포해야** 함수에 반영된다.
+
+배포 후 확인:
+
+1. `https://<도메인>/api/analyze` 를 열면 `{"configured":true,"model":"gpt-4o-mini"}` 가 나와야 한다.
+   `configured:false` 면 키가 그 환경에 없거나 재배포를 안 한 것이다.
+2. 앱에서 My → AI 설정에 모델 이름이 보이면 연결된 것이다.
+3. `+` 로 한 문장 넣고 분석 → 제안 화면이 뜨면 끝.
+
+라우팅은 `HashRouter` 라서 새로고침 404를 위한 rewrite 설정이 필요 없다.
 
 ## 다음 단계 후보
 
