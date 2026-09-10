@@ -1,0 +1,46 @@
+/* Memo Life 2.0 — Foundations
+   Neutral Base + 하나의 Brand Color. 정보 종류는 색이 아니라 아이콘·레이블·레이아웃으로 구분한다. */
+:root {
+  /* Base */
+  --paper: #f1eef6;
+  --surface: #ffffff;
+  --sunken: #f5f3f9;
+  --line: #e7e2ef;
+  --line-2: #efebf5;
+
+  /* Ink */
+  --ink: #1a1326;
+  --ink-2: #6b627c;
+  --ink-3: #9c94a9;
+
+  /* Brand */
+  --brand: #7b2bf0;
+  --brand-ink: #5a17be;
+  --brand-soft: #f1e8fe;
+  --brand-mark: linear-gradient(155deg, #ffc9b4 0%, #e44cff 48%, #2b36ff 100%);
+
+  /* Status */
+  --warn: #9a5b00;
+  --warn-bg: #fbf1df;
+  --done: #127a5b;
+  --done-bg: #e6f4ef;
+  --danger: #b3261e;
+
+  /* Radius */
+  --r-s: 8px;
+  --r-m: 12px;
+  --r-l: 16px;
+
+  /* Spacing scale: 4 8 12 16 24 32 48 */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+
+  /* Type */
+  --font: 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo',
+    'Malgun Gothic', system-ui, sans-serif;
+}

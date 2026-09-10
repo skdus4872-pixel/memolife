@@ -1,0 +1,13 @@
+node_modules
+dist
+.vite
+*.local
+.DS_Store
+
+# 목업 원본 압축본 (같은 내용의 html/png 가 이미 들어 있음)
+Gmail/**/*.zip
+
+# API 키
+.env
+.env.*
+!.env.example
