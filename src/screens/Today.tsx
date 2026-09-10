@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { RecordItem } from '../components/RecordItem'
 import { useStore } from '../lib/store'
+import { useSettings } from '../lib/settings'
 import { confirmedSpendOn, pendingFoodRecords, recordsOn, scheduleCountOn, timeOf } from '../lib/derive'
 import { dayOfMonth, koreanDate, minutesOf, monthEn, nowClock, today, weekdayEn } from '../lib/date'
 import { won } from '../lib/format'
 
 export function Today() {
   const { records } = useStore()
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const date = today()
 
@@ -20,7 +22,10 @@ export function Today() {
   const scheduleCount = scheduleCountOn(records, date)
 
   // 지난 날짜의 확인 대기 기록은 타임라인이 아니라 "확인할 기록"으로 따로 모은다
-  const pending = pendingFoodRecords(records).filter((r) => !list.some((l) => l.id === r.id))
+  // (My → 알림과 제안에서 끌 수 있다)
+  const pending = settings.foodCheck
+    ? pendingFoodRecords(records).filter((r) => !list.some((l) => l.id === r.id))
+    : []
 
   // 지금 시각과 가장 가까운 다가오는 기록 하나만 현재 지점으로 표시한다
   const nowMinutes = minutesOf(nowClock()) ?? 0

@@ -139,15 +139,34 @@ export function weekSummary(records: LifeRecord[], anchor: ISODate = today()): W
  * 기존 카테고리에 맞으면 그대로 쓰고, 없을 때만 새 이름을 만들게 한다.
  */
 export function existingCategories(records: LifeRecord[]): string[] {
-  const count = new Map<string, number>()
+  return categoryUsage(records).map((c) => c.name)
+}
+
+export interface CategoryUsage {
+  name: string
+  count: number
+  total: number
+}
+
+/** 카테고리별 사용 건수와 확정 지출 합계 */
+export function categoryUsage(records: LifeRecord[]): CategoryUsage[] {
+  const map = new Map<string, CategoryUsage>()
   for (const r of records) {
     for (const t of r.modules.money?.transactions ?? []) {
       const name = t.category?.trim()
       if (!name) continue
-      count.set(name, (count.get(name) ?? 0) + 1)
+      const entry = map.get(name) ?? { name, count: 0, total: 0 }
+      entry.count += 1
+      if (t.status === 'confirmed') entry.total += t.kind === 'refund' ? -t.amount : t.amount
+      map.set(name, entry)
     }
   }
-  return [...count.entries()].sort((a, b) => b[1] - a[1]).map(([name]) => name)
+  return [...map.values()].sort((a, b) => b.count - a.count)
+}
+
+/** 기록에서 쓰인 카테고리 + 사용자가 미리 만들어 둔 카테고리 */
+export function allCategories(records: LifeRecord[], custom: string[] = []): string[] {
+  return [...new Set([...existingCategories(records), ...custom])]
 }
 
 export type SearchFilter = 'all' | 'schedule' | 'money' | 'food' | 'text'

@@ -6,7 +6,8 @@ import { useToast } from '../components/Toast'
 import { useStore } from '../lib/store'
 import { needsFoodCheck } from '../lib/derive'
 import { koreanDate, shortDate } from '../lib/date'
-import { kcalRange, won } from '../lib/format'
+import { won } from '../lib/format'
+import { PORTION_LABEL } from '../lib/food'
 import { MODULE_ICON, MODULE_LABEL, type ModuleKey } from '../lib/types'
 
 const ADDABLE: ModuleKey[] = ['schedule', 'money', 'food', 'place', 'person', 'task', 'text']
@@ -130,8 +131,8 @@ export function RecordDetail() {
               <div className="v">{m.food.actualName ?? m.food.plannedName ?? '음식'}</div>
               {m.food.status === 'confirmed' && (
                 <div className="side2">
-                  {kcalRange(m.food.kcalMin, m.food.kcalMax) ?? '추정값 없음'}
-                  {m.food.estimateBasis ? ` · ${m.food.estimateBasis}` : ''}
+                  {PORTION_LABEL[m.food.portion]}
+                  {m.food.ingredients.length > 0 ? ` · ${m.food.ingredients.join(', ')}` : ''}
                 </div>
               )}
               {m.food.status === 'skipped' && <div className="side2">먹지 않았어요 · 통계에 넣지 않아요</div>}

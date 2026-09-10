@@ -1,48 +1,30 @@
-import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { IconSprite } from './Icon'
 import { TabBar } from './TabBar'
 import { ToastProvider } from './Toast'
-import { nowClock } from '../lib/date'
+import { Splash, useSplash } from './Splash'
+import { useSettings } from '../lib/settings'
 
-// 시트가 화면 전체를 덮는 /quick-record 에서는 탭을 함께 그리지 않는다
 const TAB_ROUTES = ['/', '/calendar', '/insight', '/my']
 
 export function Layout() {
   const { pathname } = useLocation()
+  const { settings } = useSettings()
   const showTab = TAB_ROUTES.includes(pathname)
+
+  // 앱을 열 때 2초. /exit 에서는 종료 화면이 스플래시를 직접 그린다.
+  const splash = useSplash(settings.splash && pathname !== '/exit')
 
   return (
     <div className="device-stage">
       <IconSprite />
       <div className="device">
         <ToastProvider>
-          <StatusBar />
           <Outlet />
           {showTab && <TabBar />}
+          {splash !== 'done' && <Splash leaving={splash === 'leaving'} />}
         </ToastProvider>
       </div>
-    </div>
-  )
-}
-
-function StatusBar() {
-  const [clock, setClock] = useState(nowClock)
-
-  useEffect(() => {
-    const id = window.setInterval(() => setClock(nowClock()), 20000)
-    return () => window.clearInterval(id)
-  }, [])
-
-  return (
-    <div className="statusbar">
-      <span className="num">{clock}</span>
-      <span className="dots" aria-hidden="true">
-        <i style={{ height: 7 }} />
-        <i style={{ height: 10 }} />
-        <i style={{ height: 13 }} />
-        <i style={{ height: 6, opacity: 0.3 }} />
-      </span>
     </div>
   )
 }

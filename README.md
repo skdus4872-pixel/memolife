@@ -31,7 +31,7 @@ LifeRecord
 | 확정된 거래만 지출 통계에 넣는다 | `derive.ts` `confirmedSpendOn`, `weekSummary` |
 | 예정 식사는 섭취 통계에 넣지 않는다 | `derive.ts` `needsFoodCheck`, `FoodModule.status` |
 | 종료 시각이 없으면 임의로 끝났다고 보지 않는다 | `derive.ts` `needsFoodCheck` |
-| 재료가 없으면 kcal를 추정하지 않는다 | `src/lib/kcal.ts` `estimateKcal` → `null` |
+| 칼로리는 다루지 않는다 — 무엇을 얼마나 먹었는지만 남긴다 | `src/lib/food.ts`, `FoodModule` |
 | 이름·장소가 같아도 자동 병합하지 않는다 | `components/ModuleSheet.tsx` PersonForm / PlaceForm |
 | 모듈 삭제와 Record 전체 삭제를 구분한다 | `ModuleSheet` 이 정보만 지우기 / RecordDetail 더보기 |
 
@@ -41,13 +41,32 @@ LifeRecord
 | --- | --- | --- |
 | `/` | Today — 오늘 요약, 확인할 기록, 시간순 타임라인, 시간 미정 | 01 |
 | `/quick-record` | 빠른 기록 — 자연어 입력 → 분석하기 / AI 없이 저장 | 02 |
+| — | 앱을 열면 스플래시 2초 (My → 테마에서 끌 수 있음) | 00 |
 | `/quick-record/analysis` | AI 분석 — 제안 선택·수정 후 저장 | 03 |
 | `/record/:id` | 기록 상세 — 모듈 조회·수정·추가, 고정, 삭제 | 04 |
 | `/record/:id/food` | 음식 기록 — 섭취 확인 → 재료·양 → 예상 범위 저장 | 05 |
 | `/calendar` | 캘린더 — 월 이동, 기록 있는 날 표시, 날짜별 목록 | 06 |
 | `/insight` | 인사이트 — 확정 지출, 요일 막대, 분류, 기록일, 확인 대기 | 07 |
 | `/search` | 검색 — 원문·사람·장소·재료까지, 모듈 필터 | 08 |
-| `/my`, `/my/saved` | 마이 — 저장된 기록, 내보내기, 설정 | 09 |
+| `/my` | 마이 — 프로필, 기록 관리, 설정 | 09 |
+| `/my/saved` | 저장된(고정한) 기록 | — |
+| `/my/categories` | 카테고리 관리 — 이름 변경·삭제·추가 | — |
+| `/my/data` | 데이터 관리 — 내보내기·가져오기·초기화 | — |
+| `/my/ai` | AI 설정 — 연결 상태, 제안 켜기/끄기 | — |
+| `/my/notifications` | 알림과 제안 — 식사 확인 제안 | — |
+| `/my/theme` | 테마 — 라이트/다크/시스템, 시작 화면 | — |
+| `/my/help` | 도움말 — 기록을 다루는 방식 | — |
+| `/exit` | 앱 종료 — 스플래시를 다시 보여주고 창을 닫음 | 00 |
+
+설정은 `localStorage`(`memolife.settings.v1`)에 저장되고 실제 동작에 반영된다.
+
+| 설정 | 영향 |
+| --- | --- |
+| AI 제안 받기 | 끄면 빠른 기록이 분석 없이 원문만 저장한다 |
+| 식사 확인 제안 | 끄면 Today의 "확인할 기록"과 카드의 확인 버튼이 사라진다 |
+| 테마 | `data-theme` 로 다크 팔레트를 적용한다 (토큰만 교체) |
+| 시작 화면 | 앱을 열 때 스플래시(2초)를 보여줄지 |
+| 카테고리 | 여기서 만든 이름도 AI 분석에 함께 보낸다 |
 
 ## AI 분석 (OpenAI)
 

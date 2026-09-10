@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom'
 import { Icon, type IconName } from './Icon'
 import { needsFoodCheck, summaryLine, timeOf } from '../lib/derive'
-import { kcalAround, won } from '../lib/format'
+import { useSettings } from '../lib/settings'
+import { won } from '../lib/format'
+import { PORTION_LABEL } from '../lib/food'
 import type { ISODate, LifeRecord } from '../lib/types'
 
 export function primaryIcon(record: LifeRecord): IconName {
@@ -28,12 +30,13 @@ export function RecordItem({
   now?: boolean
 }) {
   const navigate = useNavigate()
+  const { settings } = useSettings()
   const time = timeOf(record)
   const { money, food, schedule } = record.modules
   const sub = summaryLine(record)
 
   const txToday = (money?.transactions ?? []).filter((t) => t.occurredAt === date)
-  const checkFood = needsFoodCheck(record)
+  const checkFood = settings.foodCheck && needsFoodCheck(record)
 
   return (
     <div className={`item${now ? ' now' : ''}`}>
@@ -81,7 +84,6 @@ function FoodMod({
 }) {
   const food = record.modules.food!
   const name = food.actualName ?? food.plannedName ?? '음식'
-  const kcal = kcalAround(food.kcalMin, food.kcalMax)
 
   if (checkFood) {
     return (
@@ -101,7 +103,11 @@ function FoodMod({
       <Icon name="i-bowl" size="xs" />
       {name}
       <span className="r" style={{ color: 'var(--ink-3)', fontWeight: 500 }}>
-        {food.status === 'confirmed' ? (kcal ?? '섭취 확인') : food.status === 'skipped' ? '먹지 않음' : '예정'}
+        {food.status === 'confirmed'
+          ? `먹음 · ${PORTION_LABEL[food.portion]}`
+          : food.status === 'skipped'
+            ? '먹지 않음'
+            : '예정'}
       </span>
     </div>
   )

@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
 import { useStore } from '../lib/store'
-import { confirmedSpendOn, existingCategories, scheduleCountOn } from '../lib/derive'
+import { allCategories, confirmedSpendOn, scheduleCountOn } from '../lib/derive'
+import { useSettings } from '../lib/settings'
 import { dayOfMonth, monthEn, today, weekdayEn } from '../lib/date'
 import { won } from '../lib/format'
 import { analyzeText } from '../lib/ai'
@@ -23,6 +24,7 @@ export function QuickRecord() {
   const toast = useToast()
   const store = useStore()
   const { records } = store
+  const { settings } = useSettings()
 
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
@@ -37,7 +39,7 @@ export function QuickRecord() {
     try {
       const result = await analyzeText({
         text,
-        categories: existingCategories(records),
+        categories: allCategories(records, settings.customCategories),
         today: date,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       })
@@ -123,21 +125,37 @@ export function QuickRecord() {
           </div>
         )}
 
-        <button
-          type="button"
-          className="btn"
-          style={{ marginTop: 14 }}
-          disabled={!text.trim() || loading}
-          onClick={analyze}
-        >
-          {loading ? '분석 중…' : '분석하기'}
-        </button>
-
-        <p className="center-note">
-          {loading
-            ? '원문에서 날짜·금액·음식 같은 정보를 찾는 중이에요'
-            : '찾은 정보는 다음 화면에서 고르고 고친 뒤에 저장돼요'}
-        </p>
+        {settings.aiSuggestions ? (
+          <>
+            <button
+              type="button"
+              className="btn"
+              style={{ marginTop: 14 }}
+              disabled={!text.trim() || loading}
+              onClick={analyze}
+            >
+              {loading ? '분석 중…' : '분석하기'}
+            </button>
+            <p className="center-note">
+              {loading
+                ? '원문에서 날짜·금액·음식 같은 정보를 찾는 중이에요'
+                : '찾은 정보는 다음 화면에서 고르고 고친 뒤에 저장돼요'}
+            </p>
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="btn"
+              style={{ marginTop: 14 }}
+              disabled={!text.trim()}
+              onClick={saveTextOnly}
+            >
+              기록하기
+            </button>
+            <p className="center-note">AI 제안을 꺼 두었어요 · My → AI 설정에서 다시 켤 수 있어요</p>
+          </>
+        )}
 
         <button type="button" className="btn ghost" style={{ marginTop: 10 }} onClick={close} disabled={loading}>
           닫기

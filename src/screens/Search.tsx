@@ -5,7 +5,7 @@ import { primaryIcon } from '../components/RecordItem'
 import { useStore } from '../lib/store'
 import { searchRecords, summaryLine, timeOf, type SearchFilter } from '../lib/derive'
 import { shortDate } from '../lib/date'
-import { kcalAround, won } from '../lib/format'
+import { won } from '../lib/format'
 import type { LifeRecord } from '../lib/types'
 
 const FILTERS: { value: SearchFilter; label: string }[] = [
@@ -113,10 +113,7 @@ function subline(record: LifeRecord): string {
   if (confirmed.length) parts.push(won(confirmed.reduce((s, t) => s + t.amount, 0)))
 
   const food = record.modules.food
-  if (food?.status === 'confirmed') {
-    const kcal = kcalAround(food.kcalMin, food.kcalMax)
-    parts.push(kcal ?? '섭취 확인됨')
-  }
+  if (food?.status === 'confirmed') parts.push(food.actualName ?? '식사 확인됨')
 
   const summary = summaryLine(record)
   if (parts.length === 0 && summary) return summary

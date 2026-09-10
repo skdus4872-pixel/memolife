@@ -3,7 +3,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
 import { useStore } from '../lib/store'
-import { existingCategories } from '../lib/derive'
+import { allCategories } from '../lib/derive'
+import { useSettings } from '../lib/settings'
 import { koreanDate, today } from '../lib/date'
 import { uid, won } from '../lib/format'
 import {
@@ -23,6 +24,7 @@ export function AiAnalysis() {
   const navigate = useNavigate()
   const toast = useToast()
   const store = useStore()
+  const { settings } = useSettings()
   const location = useLocation()
   const incoming = (location.state as { result?: AnalysisResult } | null)?.result
 
@@ -32,7 +34,10 @@ export function AiAnalysis() {
   const [editingTitle, setEditingTitle] = useState(false)
   const [adding, setAdding] = useState(false)
 
-  const categories = useMemo(() => existingCategories(store.records), [store.records])
+  const categories = useMemo(
+    () => allCategories(store.records, settings.customCategories),
+    [store.records, settings.customCategories],
+  )
   const selected = suggestions.filter((s) => s.selected)
 
   // 원문 없이 이 화면에 직접 들어온 경우 (새로고침 등)
@@ -433,7 +438,7 @@ function Editor({
               </button>
             </div>
           </Field>
-          <p className="hint">칼로리와 재료는 음식 확인 화면에서 직접 고릅니다.</p>
+          <p className="hint">재료와 양은 식사 후 음식 확인 화면에서 직접 고릅니다.</p>
         </>
       )
 

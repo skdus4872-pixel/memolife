@@ -16,6 +16,7 @@ const STORAGE_KEY = 'memolife.records.v1'
 type Action =
   | { type: 'upsert'; record: LifeRecord }
   | { type: 'remove'; id: string }
+  | { type: 'replaceAll'; records: LifeRecord[] }
   | { type: 'reset' }
 
 function reducer(state: LifeRecord[], action: Action): LifeRecord[] {
@@ -28,6 +29,8 @@ function reducer(state: LifeRecord[], action: Action): LifeRecord[] {
     }
     case 'remove':
       return state.filter((r) => r.id !== action.id)
+    case 'replaceAll':
+      return action.records
     case 'reset':
       return buildSeed()
   }
@@ -38,7 +41,8 @@ function load(): LifeRecord[] {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return buildSeed()
     const parsed = JSON.parse(raw) as LifeRecord[]
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : buildSeed()
+    // 비어 있는 배열도 사용자가 전부 지운 상태이므로 그대로 존중한다
+    return Array.isArray(parsed) ? parsed : buildSeed()
   } catch {
     // 저장 데이터를 읽지 못해도 앱은 열려야 한다
     return buildSeed()
@@ -62,6 +66,10 @@ export interface RecordStore {
   remove(id: string): void
   togglePin(id: string): void
   resetToSeed(): void
+  /** 가져오기 — 기록 전체를 교체한다 */
+  replaceAll(records: LifeRecord[]): void
+  /** 전체 삭제 */
+  clear(): void
 }
 
 const StoreContext = createContext<RecordStore | null>(null)
@@ -122,6 +130,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       remove: (id) => dispatch({ type: 'remove', id }),
       togglePin: (id) => update(id, (r) => ({ ...r, pinned: !r.pinned })),
       resetToSeed: () => dispatch({ type: 'reset' }),
+      replaceAll: (next) => dispatch({ type: 'replaceAll', records: next }),
+      clear: () => dispatch({ type: 'replaceAll', records: [] }),
     }
   }, [records, get, update])
 

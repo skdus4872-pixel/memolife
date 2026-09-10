@@ -67,13 +67,13 @@ export function Insight() {
             <div className="n">전체 지출의 {Math.round(week.topCategory.ratio * 100)}%</div>
           </div>
           <svg className="donut" width="72" height="72" viewBox="0 0 72 72" aria-hidden="true">
-            <circle cx="36" cy="36" r="28" fill="none" stroke="#EFEBF5" strokeWidth="11" />
+            <circle cx="36" cy="36" r="28" fill="none" style={{ stroke: 'var(--line-2)' }} strokeWidth="11" />
             <circle
               cx="36"
               cy="36"
               r="28"
               fill="none"
-              stroke="#7B2BF0"
+              style={{ stroke: 'var(--brand)' }}
               strokeWidth="11"
               strokeLinecap="round"
               strokeDasharray={`${CIRCUMFERENCE * week.topCategory.ratio} ${CIRCUMFERENCE}`}

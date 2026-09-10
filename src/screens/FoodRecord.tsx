@@ -3,15 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
 import { useStore } from '../lib/store'
-import { estimateKcal, PORTION_LABEL, suggestIngredients } from '../lib/kcal'
-import { kcalRange } from '../lib/format'
+import { PORTION_LABEL, PORTIONS, suggestIngredients } from '../lib/food'
 import type { Portion } from '../lib/types'
-
-const PORTIONS: Portion[] = ['small', 'normal', 'large']
 
 /**
  * 계획 → 실제 기록으로 넘어가는 유일한 경로.
- * 먹었다고 확인한 정보만 음식 통계에 들어간다. — 기획서 07
+ * 먹었다고 확인한 기록만 실제 식사로 남는다. — 기획서 07
  */
 export function FoodRecord() {
   const { id = '' } = useParams()
@@ -34,8 +31,6 @@ export function FoodRecord() {
     const base = suggestIngredients(name)
     return [...new Set([...base, ...ingredients])]
   }, [name, ingredients])
-
-  const estimate = useMemo(() => estimateKcal(ingredients, portion), [ingredients, portion])
 
   if (!record) {
     return (
@@ -62,9 +57,6 @@ export function FoodRecord() {
         ingredients: m.food?.ingredients ?? [],
         portion: m.food?.portion ?? 'normal',
         consumedAt: undefined,
-        kcalMin: undefined,
-        kcalMax: undefined,
-        estimateBasis: undefined,
       },
     }))
     toast(status === 'skipped' ? '먹지 않은 것으로 남겼어요' : '나중에 다시 물어볼게요')
@@ -81,9 +73,6 @@ export function FoodRecord() {
         status: 'confirmed',
         ingredients,
         portion,
-        kcalMin: estimate?.min,
-        kcalMax: estimate?.max,
-        estimateBasis: estimate?.basis,
       },
     }))
     toast('기록했어요')
@@ -105,15 +94,15 @@ export function FoodRecord() {
 
       <div className="prog">
         <div className="bar">
-          <i style={{ width: `${(step / 3) * 100}%` }} />
+          <i style={{ width: `${(step / 2) * 100}%` }} />
         </div>
-        <span className="num">{step} / 3</span>
+        <span className="num">{step} / 2</span>
       </div>
 
       {step === 1 && (
         <>
           <div className="h-lg">{initialName}을(를) 실제로 드셨나요?</div>
-          <p className="h-sub">확인하기 전에는 음식 통계에 넣지 않아요.</p>
+          <p className="h-sub">확인하기 전에는 실제 식사 기록으로 세지 않아요.</p>
           <div className="choice">
             <button type="button" onClick={() => setStep(2)}>
               먹었어요
@@ -144,7 +133,7 @@ export function FoodRecord() {
             aria-label="음식 이름"
           />
 
-          <div className="lbl">주요 재료</div>
+          <div className="lbl">주요 재료 (선택)</div>
           <div className="chips">
             {options.map((ing) => {
               const on = ingredients.includes(ing)
@@ -189,7 +178,7 @@ export function FoodRecord() {
             </button>
           </div>
 
-          <div className="lbl">양</div>
+          <div className="lbl">얼마나 먹었나요</div>
           <div className="seg">
             {PORTIONS.map((p) => (
               <button type="button" key={p} className={portion === p ? 'on' : ''} onClick={() => setPortion(p)}>
@@ -199,55 +188,7 @@ export function FoodRecord() {
           </div>
 
           <div className="push" style={{ paddingTop: 20 }}>
-            <button type="button" className="btn" onClick={() => setStep(3)} disabled={!name.trim()}>
-              다음
-            </button>
-            <p className="center-note">재료를 고르지 않아도 먹은 사실은 기록할 수 있어요.</p>
-          </div>
-        </>
-      )}
-
-      {step === 3 && (
-        <>
-          <div className="h-lg">이렇게 기록할게요</div>
-          <p className="h-sub">정확한 칼로리가 아니라, 고른 재료와 양을 기준으로 한 예상 범위예요.</p>
-
-          <div className="selrow">
-            <Icon name="i-bowl" size="sm" style={{ color: 'var(--ink-2)' }} />
-            {name}
-            <span className="r num">{PORTION_LABEL[portion]}</span>
-          </div>
-
-          {ingredients.length > 0 && (
-            <>
-              <div className="lbl">재료</div>
-              <div className="chips">
-                {ingredients.map((i) => (
-                  <span className="c on" key={i}>
-                    {i}
-                  </span>
-                ))}
-              </div>
-            </>
-          )}
-
-          <div className="est">
-            <div className="k">예상 칼로리</div>
-            {estimate ? (
-              <>
-                <div className="v num">{kcalRange(estimate.min, estimate.max)}</div>
-                <div className="n">재료와 양에 따라 달라질 수 있어요 · {estimate.basis}</div>
-              </>
-            ) : (
-              <>
-                <div className="v none">추정하지 않았어요</div>
-                <div className="n">재료 정보가 없어 임의의 숫자를 만들지 않습니다. 먹은 사실만 기록돼요.</div>
-              </>
-            )}
-          </div>
-
-          <div className="push" style={{ paddingTop: 20 }}>
-            <button type="button" className="btn brand" onClick={save}>
+            <button type="button" className="btn brand" onClick={save} disabled={!name.trim()}>
               기록하기
             </button>
             <div className="center-note">

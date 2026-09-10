@@ -60,7 +60,8 @@ export interface MoneyModule {
 
 /**
  * 음식은 최상위 기능이 아니라 식사 맥락이 있는 Record에 붙는 Contextual Module이다.
- * 예정 상태는 절대 섭취 통계에 들어가지 않는다. — 기획서 07
+ * 예정 상태는 절대 섭취 기록으로 집계되지 않는다. — 기획서 07
+ * 칼로리는 다루지 않는다. 무엇을 얼마나 먹었는지만 남긴다.
  */
 export type FoodStatus = 'planned' | 'pending' | 'skipped' | 'confirmed'
 export type Portion = 'small' | 'normal' | 'large'
@@ -72,10 +73,6 @@ export interface FoodModule {
   status: FoodStatus
   ingredients: string[]
   portion: Portion
-  /** 추정 범위. 재료 정보가 없으면 비워둔다(추정 불가). */
-  kcalMin?: number
-  kcalMax?: number
-  estimateBasis?: string
 }
 
 export interface PlaceModule {

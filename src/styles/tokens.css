@@ -17,6 +17,8 @@
   --brand: #7b2bf0;
   --brand-ink: #5a17be;
   --brand-soft: #f1e8fe;
+  /* 검색어·원문 근거 하이라이트 */
+  --highlight: #ebd9ff;
   --brand-mark: linear-gradient(155deg, #ffc9b4 0%, #e44cff 48%, #2b36ff 100%);
 
   /* Status */
@@ -43,4 +45,32 @@
   /* Type */
   --font: 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo',
     'Malgun Gothic', system-ui, sans-serif;
+
+  color-scheme: light;
+}
+
+/* 다크 — 같은 역할의 토큰만 바꾼다. 컴포넌트 CSS 는 손대지 않는다. */
+:root[data-theme='dark'] {
+  --paper: #0f0b16;
+  --surface: #171224;
+  --sunken: #201a30;
+  --line: #2d2540;
+  --line-2: #262034;
+
+  --ink: #f3effa;
+  --ink-2: #a79fba;
+  --ink-3: #7b7291;
+
+  --brand: #a06bff;
+  --brand-ink: #cbaaff;
+  --brand-soft: #2b2042;
+  --highlight: #4a2b80;
+
+  --warn: #f0c078;
+  --warn-bg: #38290f;
+  --done: #6fd6b0;
+  --done-bg: #12312a;
+  --danger: #ff8a80;
+
+  color-scheme: dark;
 }
