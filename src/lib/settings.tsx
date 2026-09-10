@@ -14,18 +14,16 @@ export interface Settings {
   aiSuggestions: boolean
   /** 일정이 끝난 식사에 확인 제안을 띄울지 */
   foodCheck: boolean
-  /** 앱을 열 때 스플래시를 보여줄지 */
-  splash: boolean
   /** 아직 쓴 기록은 없지만 사용자가 미리 만들어 둔 지출 카테고리 */
   customCategories: string[]
 }
 
 const DEFAULTS: Settings = {
   profile: { name: '나연', email: 'nayeon@example.com' },
-  theme: 'system',
+  // 기본은 라이트. 사용자가 고르면 그때부터 그 선택을 따른다.
+  theme: 'light',
   aiSuggestions: true,
   foodCheck: true,
-  splash: true,
   customCategories: [],
 }
 

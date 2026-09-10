@@ -1,4 +1,4 @@
-import { SubHeader, ToggleRow } from '../../components/SubHeader'
+import { SubHeader } from '../../components/SubHeader'
 import { useSettings, type ThemeChoice } from '../../lib/settings'
 
 const CHOICES: { value: ThemeChoice; label: string; desc: string }[] = [
@@ -30,14 +30,6 @@ export function ThemeSettings() {
         {CHOICES.find((c) => c.value === settings.theme)?.desc} · 지금은 {resolvedTheme === 'dark' ? '다크' : '라이트'}로
         보고 있어요
       </p>
-
-      <div className="section-title">시작 화면</div>
-      <ToggleRow
-        label="앱을 열 때 로고 화면 보여주기"
-        desc="2초 동안 보이고 사라집니다"
-        value={settings.splash}
-        onChange={(v) => update({ splash: v })}
-      />
 
       <div className="info-card">
         색은 정보의 종류를 나타내지 않습니다. 일정·지출·음식은 아이콘과 레이블로 구분하기 때문에 어느 테마에서도

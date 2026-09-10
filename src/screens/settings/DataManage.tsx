@@ -109,19 +109,8 @@ export function DataManage() {
       <div className="section-title">초기화</div>
       <button
         type="button"
-        className="btn line"
-        onClick={() => {
-          if (!window.confirm('지금 기록을 지우고 샘플 데이터로 되돌릴까요?')) return
-          store.resetToSeed()
-          toast('샘플 데이터로 되돌렸어요')
-        }}
-      >
-        샘플 데이터로 되돌리기
-      </button>
-      <button
-        type="button"
         className="btn danger"
-        style={{ marginTop: 8 }}
+        disabled={store.records.length === 0}
         onClick={() => {
           if (!window.confirm(`기록 ${store.records.length}개를 모두 지웁니다. 되돌릴 수 없어요.`)) return
           store.clear()

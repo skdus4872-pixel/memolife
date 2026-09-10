@@ -7,7 +7,6 @@ import {
   useReducer,
   type ReactNode,
 } from 'react'
-import { buildSeed } from './seed'
 import { uid } from './format'
 import type { LifeRecord, ModuleKey, Modules } from './types'
 
@@ -17,7 +16,6 @@ type Action =
   | { type: 'upsert'; record: LifeRecord }
   | { type: 'remove'; id: string }
   | { type: 'replaceAll'; records: LifeRecord[] }
-  | { type: 'reset' }
 
 function reducer(state: LifeRecord[], action: Action): LifeRecord[] {
   switch (action.type) {
@@ -31,21 +29,21 @@ function reducer(state: LifeRecord[], action: Action): LifeRecord[] {
       return state.filter((r) => r.id !== action.id)
     case 'replaceAll':
       return action.records
-    case 'reset':
-      return buildSeed()
   }
 }
 
+/** 앱은 빈 상태로 시작한다. 사용자가 쓴 기록만 남는다. */
 function load(): LifeRecord[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return buildSeed()
+    if (!raw) return []
     const parsed = JSON.parse(raw) as LifeRecord[]
-    // 비어 있는 배열도 사용자가 전부 지운 상태이므로 그대로 존중한다
-    return Array.isArray(parsed) ? parsed : buildSeed()
+    if (!Array.isArray(parsed)) return []
+    // 예전 버전에서 깔려 있던 예시 기록은 걷어낸다. 사용자가 쓴 기록은 그대로 둔다.
+    return parsed.filter((r) => !String(r?.id ?? '').startsWith('seed_'))
   } catch {
     // 저장 데이터를 읽지 못해도 앱은 열려야 한다
-    return buildSeed()
+    return []
   }
 }
 
@@ -65,7 +63,6 @@ export interface RecordStore {
   removeModule(id: string, key: ModuleKey): void
   remove(id: string): void
   togglePin(id: string): void
-  resetToSeed(): void
   /** 가져오기 — 기록 전체를 교체한다 */
   replaceAll(records: LifeRecord[]): void
   /** 전체 삭제 */
@@ -129,7 +126,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }),
       remove: (id) => dispatch({ type: 'remove', id }),
       togglePin: (id) => update(id, (r) => ({ ...r, pinned: !r.pinned })),
-      resetToSeed: () => dispatch({ type: 'reset' }),
       replaceAll: (next) => dispatch({ type: 'replaceAll', records: next }),
       clear: () => dispatch({ type: 'replaceAll', records: [] }),
     }
