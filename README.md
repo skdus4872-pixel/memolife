@@ -68,10 +68,9 @@ OPENAI_API_KEY=...
 | 파일 | 역할 |
 | --- | --- |
 | `src/lib/analysis.ts` | 요청·제안 타입 (클라이언트/서버 공용) |
-| `server/analyze.ts` | 프롬프트, JSON 스키마, OpenAI 호출, 결과 검증 |
-| `server/http.ts` | `/api/analyze` 미들웨어 (GET=상태, POST=분석) |
+| `api/analyze.ts` | 프롬프트, JSON 스키마, OpenAI 호출, 결과 검증 + Vercel 서버리스 함수 |
+| `server/http.ts` | 개발 서버용 `/api/analyze` 미들웨어 (위 파일의 로직을 그대로 사용) |
 | `vite.config.ts` | 개발·preview 서버에 위 미들웨어 연결 |
-| `api/analyze.ts` | 배포용 서버리스 함수 (Vercel 등) |
 | `src/lib/ai.ts` | 클라이언트 fetch 래퍼 |
 | `src/screens/AiAnalysis.tsx` | 03 화면 — 체크박스 선택 · 값 수정 · 저장 |
 
@@ -130,6 +129,10 @@ OPENAI_API_KEY=...
 3. `+` 로 한 문장 넣고 분석 → 제안 화면이 뜨면 끝.
 
 라우팅은 `HashRouter` 라서 새로고침 404를 위한 rewrite 설정이 필요 없다.
+
+> `package.json` 이 `"type": "module"` 이라 서버리스 함수는 ESM 으로 실행된다.
+> Node ESM 은 확장자 없는 상대 경로를 해석하지 못하므로 **`api/analyze.ts` 안에는 값 import 를 두지 않는다.**
+> (한 번 `FUNCTION_INVOCATION_FAILED` 로 죽었던 원인이다. 공유가 필요하면 타입만 import 한다.)
 
 ## 다음 단계 후보
 

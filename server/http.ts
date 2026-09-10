@@ -1,5 +1,7 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { AnalyzeError, isConfigured, modelName, runAnalysis } from './analyze'
+// 개발 서버 전용. Vite 가 번들하므로 값 import 를 써도 된다.
+// 실제 분석 로직은 배포와 완전히 같은 파일(api/analyze.ts)에서 가져온다.
+import { AnalyzeError, isConfigured, modelName, runAnalysis } from '../api/analyze'
 import type { AnalyzeRequest } from '../src/lib/analysis'
 
 const MAX_BODY = 20_000
