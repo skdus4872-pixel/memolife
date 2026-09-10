@@ -87,8 +87,6 @@ export function Today() {
         <div className="empty">
           <b>오늘은 아직 기록이 없어요</b>
           아래 + 로 오늘 있었던 일을 그대로 적어보세요.
-          <br />
-          (지금은 AI 분석 연결 전이라 준비 중이에요)
         </div>
       ) : (
         <section>

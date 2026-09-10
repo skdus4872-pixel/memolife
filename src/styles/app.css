@@ -114,17 +114,19 @@ a {
   background: var(--surface);
   flex: none;
 }
-.tab .item {
+/* 타임라인 카드(.item)와 이름이 겹치지 않도록 .nav-item 으로 둔다 */
+.tab .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 5px;
+  padding: 0;
   font-size: 10px;
   color: var(--ink-3);
   font-weight: 500;
   width: 46px;
 }
-.tab .item.on {
+.tab .nav-item.on {
   color: var(--ink);
 }
 .tab .fab {

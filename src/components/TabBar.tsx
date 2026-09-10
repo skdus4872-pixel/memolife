@@ -24,7 +24,7 @@ export function TabBar() {
 
       <button
         type="button"
-        className="item"
+        className="nav-item"
         aria-label="기록 추가"
         onClick={() => navigate('/quick-record', { state: { from: location.pathname } })}
       >
@@ -42,7 +42,7 @@ export function TabBar() {
 
 function Tab({ to, label, icon }: { to: string; label: string; icon: string }) {
   return (
-    <NavLink to={to} end={to === '/'} className={({ isActive }) => `item${isActive ? ' on' : ''}`}>
+    <NavLink to={to} end={to === '/'} className={({ isActive }) => `nav-item${isActive ? ' on' : ''}`}>
       <Icon name={icon as never} />
       {label}
     </NavLink>
