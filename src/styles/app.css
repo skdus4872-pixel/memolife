@@ -148,20 +148,6 @@ a {
   margin-bottom: 2px;
   position: relative;
 }
-.tab .fab .soon {
-  position: absolute;
-  top: -7px;
-  right: -14px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--brand-ink);
-  background: var(--brand-soft);
-  border: 1px solid #fff;
-  border-radius: 999px;
-  padding: 2px 6px;
-}
-
 /* ---------- 아이콘 ---------- */
 svg.ic {
   width: 20px;

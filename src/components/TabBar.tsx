@@ -11,7 +11,6 @@ const TABS = [
 /**
  * 하단 내비게이션.
  * + 는 탭이 아니라 현재 화면 위에서 기록을 시작하는 공통 액션이다. — 기획서 08
- * 지금은 자리와 경로만 만들어 두고, AI 분석은 나중에 붙인다.
  */
 export function TabBar() {
   const navigate = useNavigate()
@@ -26,12 +25,11 @@ export function TabBar() {
       <button
         type="button"
         className="item"
-        aria-label="기록 추가 (준비 중)"
+        aria-label="기록 추가"
         onClick={() => navigate('/quick-record', { state: { from: location.pathname } })}
       >
         <span className="fab">
           <Icon name="i-plus" />
-          <span className="soon">준비 중</span>
         </span>
       </button>
 

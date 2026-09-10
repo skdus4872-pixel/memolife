@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
 import { useToast } from '../components/Toast'
@@ -6,8 +6,7 @@ import { useStore } from '../lib/store'
 import { confirmedSpendOn, existingCategories, scheduleCountOn } from '../lib/derive'
 import { dayOfMonth, monthEn, today, weekdayEn } from '../lib/date'
 import { won } from '../lib/format'
-import { analyzeText, getAiStatus } from '../lib/ai'
-import type { AiStatus } from '../lib/analysis'
+import { analyzeText } from '../lib/ai'
 
 /** 원문에서 기록 제목을 만든다. AI 없이 저장할 때 쓴다. */
 function titleFromText(text: string): string {
@@ -28,16 +27,7 @@ export function QuickRecord() {
   const [text, setText] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<AiStatus | null>(null)
   const date = today()
-
-  useEffect(() => {
-    let alive = true
-    getAiStatus().then((s) => alive && setStatus(s))
-    return () => {
-      alive = false
-    }
-  }, [])
 
   const close = () => navigate(-1)
 
@@ -69,8 +59,6 @@ export function QuickRecord() {
     toast('기록했어요')
     navigate(`/record/${record.id}`, { replace: true })
   }
-
-  const configured = status?.configured ?? false
 
   return (
     <main className="screen flush" style={{ overflow: 'hidden' }}>
@@ -135,18 +123,11 @@ export function QuickRecord() {
           </div>
         )}
 
-        {status && !configured && !error && (
-          <div className="src" style={{ marginTop: 12 }}>
-            AI 분석이 꺼져 있어요. 서버에 <b>OPENAI_API_KEY</b> 가 있으면 열립니다. 로컬은 <b>.env</b>, 배포는 Vercel 환경
-            변수에 넣어주세요.
-          </div>
-        )}
-
         <button
           type="button"
           className="btn"
           style={{ marginTop: 14 }}
-          disabled={!text.trim() || loading || !configured}
+          disabled={!text.trim() || loading}
           onClick={analyze}
         >
           {loading ? '분석 중…' : '분석하기'}
