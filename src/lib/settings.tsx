@@ -8,6 +8,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 export type ThemeChoice = 'light' | 'dark' | 'system'
 
 export interface Settings {
+  /** 로그인하면 계정 정보로 채워진다. 로그인 전에는 비어 있다. */
   profile: { name: string; email: string }
   theme: ThemeChoice
   /** 빠른 기록에서 AI 분석을 쓸지 */
@@ -19,7 +20,7 @@ export interface Settings {
 }
 
 const DEFAULTS: Settings = {
-  profile: { name: '나연', email: 'nayeon@example.com' },
+  profile: { name: '', email: '' },
   // 기본은 라이트. 사용자가 고르면 그때부터 그 선택을 따른다.
   theme: 'light',
   aiSuggestions: true,

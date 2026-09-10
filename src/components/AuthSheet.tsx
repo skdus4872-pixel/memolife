@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { authErrorMessage, useAuth } from '../lib/auth'
+import { useSettings } from '../lib/settings'
 import { useToast } from './Toast'
 
 /**
@@ -15,6 +16,7 @@ export function AuthSheet({
   onLater?: () => void
 }) {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth()
+  const { update } = useSettings()
   const toast = useToast()
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin')
@@ -42,7 +44,13 @@ export function AuthSheet({
     if (mode === 'signin') {
       void run(() => signInWithEmail(email, password), '로그인했어요')
     } else {
-      void run(() => signUpWithEmail(email, password, name), '가입했어요')
+      void run(async () => {
+        await signUpWithEmail(email, password, name)
+        // 표시 이름 반영이 늦을 수 있어 여기서 한 번 더 확실히 맞춘다
+        update({
+          profile: { name: name.trim() || email.trim().split('@')[0], email: email.trim() },
+        })
+      }, '가입했어요')
     }
   }
 

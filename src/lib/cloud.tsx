@@ -83,6 +83,22 @@ export function CloudSync({ children }: { children: ReactNode }) {
   const lastPushed = useRef<string>('')
   const uid = user?.uid ?? null
 
+  // 프로필은 언제나 로그인한 계정을 따른다. 로그아웃하면 비운다.
+  useEffect(() => {
+    const current = settingsRef.current.profile
+    if (!user) {
+      if (current.name || current.email) settingsStore.update({ profile: { name: '', email: '' } })
+      return
+    }
+    const email = user.email ?? ''
+    const name = user.displayName?.trim() || current.name.trim() || email.split('@')[0] || '나'
+    if (current.email !== email || current.name !== name) {
+      settingsStore.update({ profile: { name, email } })
+    }
+    // settingsStore 는 매 렌더 새 객체라 의존성에서 뺀다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, user?.displayName, user?.email])
+
   // 로그인 / 로그아웃
   useEffect(() => {
     if (!uid) {
@@ -94,6 +110,15 @@ export function CloudSync({ children }: { children: ReactNode }) {
     let cancelled = false
     let unsubscribe = () => {}
 
+    /** 계정 기준 프로필. 이름은 계정 표시 이름 → 저장된 이름 → 이메일 앞부분 순으로 고른다. */
+    const accountProfile = (savedName?: string) => {
+      const email = user?.email ?? ''
+      return {
+        name: user?.displayName?.trim() || savedName?.trim() || email.split('@')[0] || '나',
+        email,
+      }
+    }
+
     const run = async () => {
       setState((s) => ({ ...s, status: 'syncing', error: null }))
       try {
@@ -103,6 +128,8 @@ export function CloudSync({ children }: { children: ReactNode }) {
 
         const merged = mergeRecords(recordsRef.current, toList(cloud.records))
         const settings: Settings = { ...settingsRef.current, ...(cloud.settings ?? {}) }
+        // 프로필은 계정 정보로 덮어쓴다 (예전에 올라간 값이 남아 있어도 계정 기준으로 맞춘다)
+        settings.profile = accountProfile(cloud.settings?.profile?.name)
 
         applyingRemote.current = true
         store.replaceAll(merged)
@@ -132,7 +159,13 @@ export function CloudSync({ children }: { children: ReactNode }) {
             applyingRemote.current = true
             lastPushed.current = incoming
             store.replaceAll(toList(value.records))
-            if (value.settings) settingsStore.replaceAll({ ...settingsRef.current, ...value.settings })
+            if (value.settings) {
+              settingsStore.replaceAll({
+                ...settingsRef.current,
+                ...value.settings,
+                profile: accountProfile(value.settings.profile?.name),
+              })
+            }
             window.setTimeout(() => {
               applyingRemote.current = false
             }, 0)

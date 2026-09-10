@@ -40,10 +40,12 @@ export function My() {
       <button type="button" className="prof" onClick={() => navigate('/my/account')}>
         <div className="avt" />
         <div style={{ textAlign: 'left', minWidth: 0 }}>
-          <div className="n">{user ? (user.displayName ?? settings.profile.name) : settings.profile.name}</div>
-          <div className="e">
-            {user ? user.email : '클라우드 저장을 위해 로그인을 권해요'}
+          <div className="n">
+            {user
+              ? user.displayName?.trim() || settings.profile.name || user.email?.split('@')[0] || '나'
+              : '로그인하지 않음'}
           </div>
+          <div className="e">{user ? user.email : '클라우드 저장을 위해 로그인을 권해요'}</div>
         </div>
         <Icon name="i-chev" size="sm" style={{ marginLeft: 'auto', color: 'var(--ink-3)' }} />
       </button>

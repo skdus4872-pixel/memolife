@@ -22,7 +22,9 @@ export function Account() {
   const toast = useToast()
 
   const [sheet, setSheet] = useState(false)
-  const [name, setName] = useState(settings.profile.name)
+  // 로그인 직후 계정 이름이 늦게 채워질 수 있어, 편집 중이 아닐 때는 설정값을 그대로 보여준다
+  const [draft, setDraft] = useState<string | null>(null)
+  const name = draft ?? settings.profile.name
 
   const provider = user?.providerData?.[0]?.providerId
   const providerLabel =
@@ -58,13 +60,19 @@ export function Account() {
 
           <div className="section-title">이름</div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <input className="input" value={name} onChange={(e) => setName(e.target.value)} />
+            <input
+              className="input"
+              value={name}
+              placeholder="앱에서 부를 이름"
+              onChange={(e) => setDraft(e.target.value)}
+            />
             <button
               type="button"
               className="chip"
               disabled={!name.trim() || name.trim() === settings.profile.name}
               onClick={() => {
                 update({ profile: { ...settings.profile, name: name.trim() } })
+                setDraft(null)
                 toast('이름을 바꿨어요')
               }}
             >
