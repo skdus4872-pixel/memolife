@@ -26,5 +26,16 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), analyzeApi(env)],
     server: { port: 5173, open: true },
+    build: {
+      rollupOptions: {
+        output: {
+          // 자주 바뀌지 않는 라이브러리는 따로 떼어 캐시가 살아 있게 한다
+          manualChunks: {
+            firebase: ['firebase/app', 'firebase/auth', 'firebase/database'],
+            react: ['react', 'react-dom', 'react-router-dom'],
+          },
+        },
+      },
+    },
   }
 })

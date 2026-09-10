@@ -10,6 +10,7 @@ import { RecordDetail } from './screens/RecordDetail'
 import { FoodRecord } from './screens/FoodRecord'
 import { QuickRecord } from './screens/QuickRecord'
 import { AiAnalysis } from './screens/AiAnalysis'
+import { Account } from './screens/settings/Account'
 import { Categories } from './screens/settings/Categories'
 import { DataManage } from './screens/settings/DataManage'
 import { AiSettings } from './screens/settings/AiSettings'
@@ -36,6 +37,7 @@ export function App() {
           <Route path="/quick-record/analysis" element={<AiAnalysis />} />
 
           <Route path="/my" element={<My />} />
+          <Route path="/my/account" element={<Account />} />
           <Route path="/my/saved" element={<SavedRecords />} />
           <Route path="/my/categories" element={<Categories />} />
           <Route path="/my/data" element={<DataManage />} />

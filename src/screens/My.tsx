@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { Icon, type IconName } from '../components/Icon'
 import { useStore } from '../lib/store'
 import { useSettings, type ThemeChoice } from '../lib/settings'
+import { useAuth } from '../lib/auth'
+import { useCloud } from '../lib/cloud'
 import { getAiStatus } from '../lib/ai'
 import { allCategories, pendingFoodRecords } from '../lib/derive'
 import type { AiStatus } from '../lib/analysis'
@@ -15,10 +17,11 @@ const THEME_LABEL: Record<ThemeChoice, string> = {
 
 export function My() {
   const { records } = useStore()
-  const { settings, update } = useSettings()
+  const { settings } = useSettings()
+  const { user } = useAuth()
+  const cloud = useCloud()
   const navigate = useNavigate()
   const [ai, setAi] = useState<AiStatus | null>(null)
-  const [editing, setEditing] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -34,14 +37,27 @@ export function My() {
 
   return (
     <main className="screen">
-      <button type="button" className="prof" onClick={() => setEditing(true)}>
+      <button type="button" className="prof" onClick={() => navigate('/my/account')}>
         <div className="avt" />
-        <div style={{ textAlign: 'left' }}>
-          <div className="n">{settings.profile.name}</div>
-          <div className="e">{settings.profile.email}</div>
+        <div style={{ textAlign: 'left', minWidth: 0 }}>
+          <div className="n">{user ? (user.displayName ?? settings.profile.name) : settings.profile.name}</div>
+          <div className="e">
+            {user ? user.email : '클라우드 저장을 위해 로그인을 권해요'}
+          </div>
         </div>
         <Icon name="i-chev" size="sm" style={{ marginLeft: 'auto', color: 'var(--ink-3)' }} />
       </button>
+
+      {!user && (
+        <button
+          type="button"
+          className="btn line"
+          style={{ marginBottom: 4 }}
+          onClick={() => navigate('/my/account')}
+        >
+          로그인하고 어디서든 이어보기
+        </button>
+      )}
 
       <div className="section-title">기록</div>
       <Row
@@ -69,6 +85,23 @@ export function My() {
 
       <div className="section-title">설정</div>
       <Row
+        icon="i-cloud"
+        label="계정과 클라우드"
+        desc={user ? '로그인한 계정에 기록이 저장됩니다' : '로그인하면 어느 기기에서든 이어서 볼 수 있어요'}
+        hint={
+          user
+            ? cloud.status === 'synced'
+              ? '최신 상태'
+              : cloud.status === 'syncing'
+                ? '맞추는 중'
+                : cloud.status === 'error'
+                  ? '문제 발생'
+                  : '연결됨'
+            : '로그인 안 함'
+        }
+        onClick={() => navigate('/my/account')}
+      />
+      <Row
         icon="i-ai"
         label="AI 설정"
         desc="빠른 기록의 자연어 분석"
@@ -85,7 +118,7 @@ export function My() {
       <Row
         icon="i-theme"
         label="테마"
-        desc="화면 밝기와 시작 화면"
+        desc="화면 밝기"
         hint={THEME_LABEL[settings.theme]}
         onClick={() => navigate('/my/theme')}
       />
@@ -104,18 +137,6 @@ export function My() {
         </button>
         <div className="center-note">Memo Life 2.0 · 기록 {records.length}개</div>
       </div>
-
-      {editing && (
-        <ProfileSheet
-          name={settings.profile.name}
-          email={settings.profile.email}
-          onClose={() => setEditing(false)}
-          onSave={(profile) => {
-            update({ profile })
-            setEditing(false)
-          }}
-        />
-      )}
     </main>
   )
 }
@@ -147,51 +168,5 @@ function Row({
         <Icon name="i-chev" size="sm" />
       </div>
     </button>
-  )
-}
-
-function ProfileSheet({
-  name,
-  email,
-  onClose,
-  onSave,
-}: {
-  name: string
-  email: string
-  onClose: () => void
-  onSave: (profile: { name: string; email: string }) => void
-}) {
-  const [n, setN] = useState(name)
-  const [e, setE] = useState(email)
-
-  return (
-    <>
-      <div className="sheet-backdrop" onClick={onClose} />
-      <div className="sheet" role="dialog" aria-label="프로필 수정">
-        <div className="handle" />
-        <h4>프로필</h4>
-        <p className="hint">이 기기에만 저장돼요. 계정 로그인은 없습니다.</p>
-        <div className="form-row">
-          <div className="k">이름</div>
-          <input className="input" value={n} onChange={(ev) => setN(ev.target.value)} />
-        </div>
-        <div className="form-row">
-          <div className="k">이메일</div>
-          <input className="input" value={e} onChange={(ev) => setE(ev.target.value)} />
-        </div>
-        <button
-          type="button"
-          className="btn"
-          style={{ marginTop: 16 }}
-          disabled={!n.trim()}
-          onClick={() => onSave({ name: n.trim(), email: e.trim() })}
-        >
-          저장하기
-        </button>
-        <button type="button" className="btn ghost" style={{ marginTop: 8 }} onClick={onClose}>
-          닫기
-        </button>
-      </div>
-    </>
   )
 }

@@ -47,6 +47,8 @@ function load(): Settings {
 interface SettingsStore {
   settings: Settings
   update(patch: Partial<Settings>): void
+  /** 클라우드에서 받은 설정으로 통째로 교체 */
+  replaceAll(next: Partial<Settings>): void
   reset(): void
   /** system 을 실제 화면에 적용한 결과 */
   resolvedTheme: 'light' | 'dark'
@@ -88,6 +90,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       settings,
       resolvedTheme,
       update: (patch) => setSettings((s) => ({ ...s, ...patch })),
+      replaceAll: (next) => setSettings({ ...DEFAULTS, ...next, profile: { ...DEFAULTS.profile, ...next.profile } }),
       reset: () => setSettings(DEFAULTS),
     }),
     [settings, resolvedTheme],

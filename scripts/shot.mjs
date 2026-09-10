@@ -15,6 +15,13 @@ const height = Number(process.argv[5] ?? 844)
 
 const browser = await chromium.launch()
 const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2 })
+
+const problems = []
+page.on('console', (msg) => {
+  if (msg.type() === 'error') problems.push(`console: ${msg.text()}`)
+})
+page.on('pageerror', (err) => problems.push(`pageerror: ${err.message}`))
+
 await page.goto(url, { waitUntil: 'networkidle' })
 await page.waitForTimeout(2600) // 스플래시가 지나가길 기다린다
 
@@ -34,7 +41,7 @@ const metrics = await page.evaluate(() => {
   }
 })
 
-console.log(JSON.stringify(metrics, null, 2))
+console.log(JSON.stringify({ ...metrics, problems }, null, 2))
 await page.screenshot({ path: out })
 console.log(`saved ${out}`)
 await browser.close()
