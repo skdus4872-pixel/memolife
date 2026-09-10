@@ -5,12 +5,18 @@
   margin: 0;
   padding: 0;
 }
+html,
+body,
+#root {
+  height: 100%;
+}
 html {
   -webkit-text-size-adjust: 100%;
 }
 body {
   font-family: var(--font);
   background: var(--paper);
+  overscroll-behavior: none;
   color: var(--ink);
   line-height: 1.5;
   word-break: keep-all;
@@ -46,6 +52,8 @@ a {
 
 /* ---------- 기기 프레임 ---------- */
 .device-stage {
+  height: 100%;
+  min-height: 100vh; /* dvh 미지원 브라우저용 */
   min-height: 100dvh;
   display: flex;
   align-items: center;
@@ -55,7 +63,10 @@ a {
   position: relative;
   width: 100%;
   max-width: 420px;
-  height: 100dvh;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  max-height: 100dvh;
   background: var(--surface);
   display: flex;
   flex-direction: column;
@@ -67,6 +78,8 @@ a {
   }
   .device {
     height: min(844px, calc(100dvh - 64px));
+    min-height: 0; /* 기본값(100dvh)이 프레임 높이를 밀어내지 않도록 */
+    max-height: none;
     border: 1px solid var(--line);
     border-radius: 30px;
     box-shadow: 0 24px 50px -30px rgba(26, 19, 38, 0.5);
